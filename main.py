@@ -1,5 +1,6 @@
 #%%
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 #%%
@@ -71,14 +72,33 @@ combined = ri.stop_date.str.cat(ri.stop_time, sep=' ')
 #%% Crear una nueva columna con la serie rpeviamnete creada
 ri['stop_datetime'] = pd.to_datetime(combined)
 
-#%%
+#%% 
 ri.stop_datetime.dt.weekday
 ri.stop_datetime.dt.year.value_counts().sort_values()
 
 #%%  Plotear agrupnado por horas
-ri.groupby(ri.stop_datetime.dt.hour).drugs_related_stop.mean().plot()
+ri.groupby(ri.stop_datetime.dt.hour).drugs_related_stop.mean()
 
-#%%  Plotear agrupnado por hora exacta
+#%%  Plotear agrupando por hora exacta
 ri.groupby(ri.stop_datetime.dt.time).drugs_related_stop.mean().plot()
+
+#%%
+ri.groupby(ri.stop_datetime.dt.hour).driver_age.mean()
+ri.groupby(ri.stop_datetime.dt.hour).driver_age.value_counts().plot()
+
+#%% Cantidad de infracciones para cada hora
+ri.stop_datetime.dt.hour.value_counts()
+
+#%% Para poder plotear lo anterior como una serie de tiempo es necesario ordenar los indices
+ri.stop_datetime.dt.hour.value_counts().sort_index().plot()
+
+#%%
+ri.groupby(ri.stop_datetime.dt.hour).stop_date.count().plot()
+
+#%%
+ri.stop_duration.value_counts(dropna=True)
+
+#%%  Eliminar datos atipicos al reemplazar por nan
+ri.loc[(ri.stop_duration=='1') | (ri.stop_duration=='2'), 'stop_duration'] = np.nan
 
 #%%
